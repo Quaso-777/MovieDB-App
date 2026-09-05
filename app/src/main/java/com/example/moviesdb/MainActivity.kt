@@ -1,9 +1,10 @@
-package com.example.moviesdb.ui
+package com.example.moviesdb
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.moviesdb.ui.theme.MovieScreen
 import com.example.moviesdb.viewmodel.MovieViewModel
 
 class MainActivity : ComponentActivity() {
@@ -11,8 +12,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val viewModel = MovieViewModel()
-        viewModel.loadMovies()
+        setContent {
+     // need navigation       MovieScreen()
+        }
 
     }
 }

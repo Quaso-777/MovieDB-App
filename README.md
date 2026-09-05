@@ -2,8 +2,6 @@
 
 A native Android application built to explore and practice Jetpack Compose, MVVM architecture, and API integration using [The Movie Database (TMDB) API](https://www.themoviedb.org/documentation/api).
 
-Side project — built for learning, not production polish.
-
 <div align="center">
   <img src="https://via.placeholder.com/250x500.png?text=Movie+List+Screen" width="250" alt="Movie List Screen" />
   &nbsp;&nbsp;&nbsp;

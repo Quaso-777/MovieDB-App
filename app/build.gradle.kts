@@ -77,4 +77,6 @@ dependencies {
 
     // Hilt Navigation Compose
     implementation("androidx.hilt:hilt-navigation-compose:1.4.0")
+
+    implementation("androidx.compose.material:material-icons-core")
 }

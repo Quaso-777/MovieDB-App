@@ -19,9 +19,8 @@ import coil.compose.AsyncImage
 @Composable
 fun MovieDetailsScreen(
     onNavigateBack: () -> Unit,
-    viewModel: MovieDetailsViewModel = viewModel() // The ViewModel handles the ID internally!
+    viewModel: MovieDetailsViewModel
 ) {
-    // 1. Observe the state in a lifecycle-aware way
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -44,7 +43,6 @@ fun MovieDetailsScreen(
             }
 
             is MovieDetailsUiState.Success -> {
-                // 2. Render the rich data from the new endpoint
                 val details = state.details
 
                 Column(

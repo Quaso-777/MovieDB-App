@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.AndroidUiMode
 import com.example.moviesdb.navigation.AppNavigation
 import com.example.moviesdb.ui.theme.MovieScreen
 import com.example.moviesdb.viewmodel.MovieViewModel
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

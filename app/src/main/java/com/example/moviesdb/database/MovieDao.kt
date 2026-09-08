@@ -1,10 +1,12 @@
 package com.example.moviesdb.database
 
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface MovieDao {
     @Query("SELECT * FROM favorite_movies")
     fun getFavoriteMovies(): Flow<List<MovieEntity>>

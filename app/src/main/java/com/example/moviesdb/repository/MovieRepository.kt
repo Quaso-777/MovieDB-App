@@ -4,16 +4,35 @@ import com.example.moviesdb.data.api.RetrofitClient
 import com.example.moviesdb.data.model.MovieResponse
 import com.example.moviesdb.BuildConfig
 import com.example.moviesdb.data.api.MovieDetails
+import com.example.moviesdb.database.MovieDao
+import com.example.moviesdb.database.MovieDao.*
+import com.example.moviesdb.database.AppDatabase
+import com.example.moviesdb.database.MovieEntity
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 
-class MovieRepository {
+class MovieRepository @Inject constructor(private val movieDao: MovieDao) {
     // This function simply passes the secure key to Retrofit
     suspend fun fetchPopularMovies(): MovieResponse {
         return RetrofitClient.api.getPopularMovies(BuildConfig.TMDB_API_KEY)
     }
 
-    suspend fun fetchMovieDetails(movieId: Int): MovieDetails{
+    suspend fun fetchMovieDetails(movieId: Int): MovieDetails {
         return RetrofitClient.api.getMovieDetails(movieId)
+    }
+
+
+    // ROOM DATABASE (LOCAL DATA)
+
+    val favoriteMovies: Flow<List<MovieEntity>> = movieDao.getFavoriteMovies()
+
+    suspend fun toggleFavorite(movie: MovieEntity, isFavorite: Boolean) {
+        if (isFavorite) {
+            movieDao.deleteFavorite(movie.id)
+        } else {
+            movieDao.insertFavorite(movie)
+        }
     }
 }
 

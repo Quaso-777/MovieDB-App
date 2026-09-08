@@ -32,7 +32,7 @@ import coil.compose.AsyncImage
 
 
 @Composable
-fun MovieScreen(viewModel: MovieViewModel = MovieViewModel(), onMovieClick: (Int) -> Unit) {
+fun MovieScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Box(modifier = Modifier.fillMaxSize()) {

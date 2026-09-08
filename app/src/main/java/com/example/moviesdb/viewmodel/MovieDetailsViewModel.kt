@@ -6,9 +6,14 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.moviesdb.database.MovieEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed interface MovieDetailsUiState {
@@ -19,16 +24,27 @@ sealed interface MovieDetailsUiState {
 
 
 
-
+@HiltViewModel
 class MovieDetailsViewModel(
+    private val repository: MovieRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val repository: MovieRepository = MovieRepository()
+    private val movieId: Int? = savedStateHandle.get<Int>("movieId")
     private val _uiState = MutableStateFlow<MovieDetailsUiState>(MovieDetailsUiState.Loading)
     val uiState: StateFlow<MovieDetailsUiState> = _uiState.asStateFlow()
+    val isFavorite: StateFlow<Boolean> = repository.favoriteMovies
+        .map { favoriteList ->
+            if (movieId == null) false else favoriteList.any{it.id == movieId}
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
 
     init {
-        val movieId: Int? = savedStateHandle.get<Int>("movieId")
+
+
 
         if (movieId != null) {
             loadMovieDetails(movieId)
@@ -47,6 +63,17 @@ class MovieDetailsViewModel(
                 Log.e(TAG, "Error fetching movie details", e)
                 _uiState.value = MovieDetailsUiState.Error(e.message ?: "Unknown error")
             }
+        }
+    }
+
+    private fun onToggleFavoriteClick(movieDetails: MovieDetails){
+        viewModelScope.launch {
+            val currentlyFavorite = isFavorite.value
+            val entity = MovieEntity(id = movieDetails.id,
+                title = movieDetails.title,
+                posterPath = movieDetails.poster_path,
+                overview = movieDetails.overview)
+            repository.toggleFavorite(entity,currentlyFavorite)
         }
     }
 

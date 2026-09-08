@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed interface MovieDetailsUiState {
     data object Loading : MovieDetailsUiState
@@ -25,7 +26,7 @@ sealed interface MovieDetailsUiState {
 
 
 @HiltViewModel
-class MovieDetailsViewModel(
+class MovieDetailsViewModel @Inject constructor(
     private val repository: MovieRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {

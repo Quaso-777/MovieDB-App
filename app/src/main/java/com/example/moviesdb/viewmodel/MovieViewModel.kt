@@ -5,18 +5,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviesdb.data.model.Movie
 import com.example.moviesdb.repository.MovieRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed interface MovieUiState {
     data object Loading : MovieUiState
     data class Success(val movies: List<Movie>) : MovieUiState
     data class Error(val message: String) : MovieUiState
 }
-
-class MovieViewModel(private val repository: MovieRepository = MovieRepository()) : ViewModel() {
+@HiltViewModel
+class MovieViewModel @Inject constructor(private val repository: MovieRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
     val uiState : StateFlow<MovieUiState> = _uiState.asStateFlow()

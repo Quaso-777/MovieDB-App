@@ -1,9 +1,9 @@
 package com.example.moviesdb.repository
 
-import com.example.moviesdb.data.api.RetrofitClient
 import com.example.moviesdb.data.model.MovieResponse
 import com.example.moviesdb.BuildConfig
 import com.example.moviesdb.data.api.MovieDetails
+import com.example.moviesdb.data.api.Tmdbapi
 import com.example.moviesdb.database.MovieDao
 import com.example.moviesdb.database.MovieDao.*
 import com.example.moviesdb.database.AppDatabase
@@ -12,14 +12,18 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
-class MovieRepository @Inject constructor(private val movieDao: MovieDao) {
-    // This function simply passes the secure key to Retrofit
+class  MovieRepository @Inject constructor(
+    private val movieDao: MovieDao,
+    private val api: Tmdbapi
+) {
+
+    //RETROFIT/TMDB (REMODE DATA
     suspend fun fetchPopularMovies(): MovieResponse {
-        return RetrofitClient.api.getPopularMovies(BuildConfig.TMDB_API_KEY)
+        return api.getPopularMovies(BuildConfig.TMDB_API_KEY)
     }
 
     suspend fun fetchMovieDetails(movieId: Int): MovieDetails {
-        return RetrofitClient.api.getMovieDetails(movieId)
+        return api.getMovieDetails(movieId)
     }
 
 

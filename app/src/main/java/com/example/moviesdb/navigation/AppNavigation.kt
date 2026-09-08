@@ -73,7 +73,6 @@ fun AppNavigation() {
                             selected = isSelected,
                             onClick = {
                                 navController.navigate(item.route) {
-                                    // These three lines are best practices for bottom nav routing:
                                     // Pops the back stack so we don't build up a massive history of back-and-forth clicks
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true

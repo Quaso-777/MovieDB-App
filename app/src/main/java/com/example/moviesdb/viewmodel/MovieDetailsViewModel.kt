@@ -24,7 +24,6 @@ sealed interface MovieDetailsUiState {
 }
 
 
-
 @HiltViewModel
 class MovieDetailsViewModel @Inject constructor(
     private val repository: MovieRepository,
@@ -35,7 +34,7 @@ class MovieDetailsViewModel @Inject constructor(
     val uiState: StateFlow<MovieDetailsUiState> = _uiState.asStateFlow()
     val isFavorite: StateFlow<Boolean> = repository.favoriteMovies
         .map { favoriteList ->
-            if (movieId == null) false else favoriteList.any{it.id == movieId}
+            if (movieId == null) false else favoriteList.any { it.id == movieId }
         }
         .stateIn(
             scope = viewModelScope,
@@ -44,7 +43,6 @@ class MovieDetailsViewModel @Inject constructor(
         )
 
     init {
-
 
 
         if (movieId != null) {
@@ -67,14 +65,16 @@ class MovieDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun onToggleFavoriteClick(movieDetails: MovieDetails){
+    fun onToggleFavoriteClick(movieDetails: MovieDetails) {
         viewModelScope.launch {
             val currentlyFavorite = isFavorite.value
-            val entity = MovieEntity(id = movieDetails.id,
+            val entity = MovieEntity(
+                id = movieDetails.id,
                 title = movieDetails.title,
                 posterPath = movieDetails.poster_path,
-                overview = movieDetails.overview)
-            repository.toggleFavorite(entity,currentlyFavorite)
+                overview = movieDetails.overview
+            )
+            repository.toggleFavorite(entity, currentlyFavorite)
         }
     }
 

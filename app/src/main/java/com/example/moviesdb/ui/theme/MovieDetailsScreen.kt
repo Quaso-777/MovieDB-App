@@ -2,10 +2,16 @@ package com.example.moviesdb.ui.theme
 import com.example.moviesdb.viewmodel.MovieDetailsUiState
 import com.example.moviesdb.viewmodel.MovieDetailsViewModel
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +28,7 @@ fun MovieDetailsScreen(
     viewModel: MovieDetailsViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isFavorite by viewModel.isFavorite.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (val state = uiState) {
@@ -51,10 +58,28 @@ fun MovieDetailsScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(16.dp)
                 ) {
-                    // Back button at the top
-                    Button(onClick = onNavigateBack) {
-                        Text("Back to List")
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(bottom = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Button(onClick = onNavigateBack) {
+                            Text("Back to List")
+                        }
+
+                        IconButton(
+                            onClick = {viewModel.onToggleFavoriteClick(details)}
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                                contentDescription = "Favorite Toggle",
+                                tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
                     }
+
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -72,7 +97,6 @@ fun MovieDetailsScreen(
                     Text(text = details.title, style = MaterialTheme.typography.headlineMedium)
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // We can now show data we didn't have before, like runtime!
                     Text(
                         text = "Release Date: ${details.release_date} • Runtime: ${details.runtime} mins",
                         style = MaterialTheme.typography.bodyMedium,
@@ -83,6 +107,7 @@ fun MovieDetailsScreen(
 
                     Text(text = details.overview, style = MaterialTheme.typography.bodyLarge)
                 }
+
             }
         }
     }

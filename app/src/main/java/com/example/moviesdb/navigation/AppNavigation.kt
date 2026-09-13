@@ -5,14 +5,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,6 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.moviesdb.ui.theme.MovieDetailsScreen
+import com.example.moviesdb.ui.theme.*
 import com.example.moviesdb.ui.theme.MovieScreen
 import com.example.moviesdb.ui.theme.FavoriteScreen
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -45,12 +52,19 @@ val bottomNavItems = listOf(
         icon = Icons.Default.Home
     ),
     BottomNavItem(
+        title = "Search",
+        route = "",
+        icon = Icons.Default.Search
+    ),
+    BottomNavItem(
         title = "Favorites",
         route = Screen.Favorites.route,
         icon = Icons.Default.Favorite
     )
+
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -61,7 +75,8 @@ fun AppNavigation() {
 
     // 2. Decide if the bottom bar should be shown
     // hide the bottom bar on detail screens
-    val showBottomBar = currentRoute == Screen.MovieList.route || currentRoute == Screen.Favorites.route
+    val showBottomBar =
+        currentRoute == Screen.MovieList.route || currentRoute == Screen.Favorites.route
 
     Scaffold(
         bottomBar = {
@@ -83,11 +98,32 @@ fun AppNavigation() {
                                     restoreState = true
                                 }
                             },
-                            icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+                            icon = {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.title
+                                )
+                            },
                             label = { Text(text = item.title) }
                         )
                     }
                 }
+            }
+        },
+        topBar = {
+            if (showBottomBar) {
+                val topBarTitle = when (currentRoute) {
+                    Screen.MovieList.route -> "Popular"
+                    Screen.Favorites.route -> "Favorites"
+                    else -> "Movies App"
+                }
+                TopAppBar(
+                    title = { Text(topBarTitle) },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor =  Purple40,
+                        titleContentColor = Color.Black
+                    )
+                )
             }
         }
     ) { innerPadding ->

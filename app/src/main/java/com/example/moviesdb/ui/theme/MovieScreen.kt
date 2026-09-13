@@ -71,8 +71,8 @@ fun MovieItem(movie: Movie, onClick: (Int) -> Unit) {
             contentDescription = "${movie.title} Movie Poster",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .width(100.dp)
-                .height(100.dp)
+                .width(150.dp)
+                .height(150.dp)
         )
         Spacer(Modifier.width(16.dp))
 
@@ -85,5 +85,6 @@ fun MovieItem(movie: Movie, onClick: (Int) -> Unit) {
                 text = movie.overview, style = MaterialTheme.typography.bodyMedium, maxLines = 3
             )
         }
+
     }
 }

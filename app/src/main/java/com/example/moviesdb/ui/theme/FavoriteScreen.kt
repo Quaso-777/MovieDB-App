@@ -41,31 +41,11 @@ fun FavoriteScreen(
             modifier = Modifier.systemBarsPadding()
         ) {
             items(favorites) { movie ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onMovieClick(movie.id) },
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-
-                    AsyncImage(
-                        model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
-                        contentDescription = movie.title,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .aspectRatio(2f / 3f)
-                            .clip(RoundedCornerShape(8.dp))
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = movie.title,
-                        style = MaterialTheme.typography.titleSmall,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                }
+                MovieGridItem(
+                    title = movie.title,
+                    posterPath = movie.posterPath,
+                    onClick = {onMovieClick(movie.id)}
+                )
             }
         }
     }

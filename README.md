@@ -1,81 +1,95 @@
-# 🎬 Movie App
+# 🎬 MoviesDB
 
-A native Android application built to explore and practice Jetpack Compose, MVVM architecture, and API integration using [The Movie Database (TMDB) API](https://www.themoviedb.org/documentation/api).
+A native Android application built to explore and master Jetpack Compose, modern MVVM architecture, and API integration using [The Movie Database (TMDB) API](https://www.themoviedb.org/documentation/api).
+
+## 📸 Screenshots
 
 <div align="center">
-  <img src="https://via.placeholder.com/250x500.png?text=Movie+List+Screen" width="250" alt="Movie List Screen" />
-  &nbsp;&nbsp;&nbsp;
-  <img src="https://via.placeholder.com/250x500.png?text=Movie+Detail+Screen" width="250" alt="Movie Detail Screen" />
+  <img src="screenshots/home_screen.png" alt="Home Screen" width="30%" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="screenshots/favorites_screen.png" alt="Favorites Screen" width="30%" />
 </div>
 
 ## ✨ Features
 
-- Browse a list of popular movies (title, overview, poster)
-- Tap a movie to view its details
-- Loading, success, and error states handled in the UI
-- Poster images loaded from TMDB via Coil
+- **Discover Movies:** Browse a dynamically loaded 3-column grid of popular movies.
+- **Detailed Views:** Tap any movie to view high-quality posters, titles, and full plot overviews.
+- **Local Favorites:** Save and manage favorite movies locally in a dedicated 2-column grid. The UI reacts instantly to database changes.
+- **Persistent Navigation:** Features a Material Design 3 Bottom Navigation Bar that saves scroll state and back-stack history across tabs.
+- **Reactive UI:** Loading, success, and error states are handled cleanly using sealed UI state interfaces.
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack & Architecture
 
-- **Kotlin** — primary language
-- **Jetpack Compose** — declarative UI toolkit
-- **ViewModel + StateFlow** — state management and unidirectional data flow
-- **Retrofit** — type-safe HTTP client for API networking
-- **Coil** — image loading for Compose
-- **Navigation Compose** — routing and screen transitions
-- **Coroutines** — asynchronous data fetching
+This application strictly follows the **MVVM (Model-View-ViewModel)** architectural pattern with Unidirectional Data Flow (UDF).
 
-## 🏗 Architecture
+- **UI:** Jetpack Compose (Material 3)
+- **Architecture:** MVVM + Repository Pattern
+- **Dependency Injection:** Dagger Hilt
+- **Local Persistence:** Room Database (SQLite)
+- **Networking:** Retrofit2 & OkHttp
+- **Asynchronous Programming:** Kotlin Coroutines & `Flow` / `StateFlow`
+- **Image Loading:** Coil
+- **Annotation Processing:** KSP (Kotlin Symbol Processing)
 
-The app follows a basic MVVM structure, separating UI from data logic:
+### Architecture Flow
 
+```text
+UI (Compose)  ───►  ViewModel  ───►  Repository  ───►  TMDB API (Remote Network)
+     ▲                    │               │
+     └── StateFlow ───────┘               └───►  Room Database (Local Cache)
 ```
-UI (Compose)  ───►  ViewModel  ───►  Repository  ───►  TMDB API (Retrofit)
-     ▲                   │
-     └── StateFlow ──────┘
-```
 
-- **`TmdbApi`** — Retrofit interface defining the API endpoints
-- **`RetrofitClient`** — builds and configures the Retrofit instance
-- **`MovieRepository`** — fetches data from the API
-- **`MovieViewModel`** — exposes UI state (`Loading`, `Success`, `Error`) via `StateFlow`
-- **`Movie` / `MovieResponse`** — data models mapped from the TMDB JSON response
-- **Compose screens** — render UI based on the current state; navigation handled by `NavHost` with sealed-class routes
+- **`NetworkModule` & `DatabaseModule`** — Hilt modules providing singletons for Retrofit and Room.
+- **`MovieRepository`** — Single source of truth fetching data from the API and observing local favorites from Room.
+- **`ViewModels`** — Injected via `@HiltViewModel`, exposing UI states (`Loading`, `Success`, `Error`) via `StateFlow`.
+- **`MovieEntity` / `MovieResponse`** — Distinct data models separating local database tables from JSON network responses.
 
 ## 📱 Screens
 
 | Screen | Description |
 |---|---|
-| **Movie List** | Shows popular movies in a scrollable list with poster, title, and overview |
-| **Movie Detail** | Displays details for a selected movie by its ID (currently a placeholder — full detail view is a next step) |
+| **Home Screen** | Shows popular movies in a scrollable 3-column grid with posters and titles. |
+| **Favorites Screen** | A 2-column grid displaying locally saved movies. Updates instantly via Room `Flow`. |
+| **Movie Detail** | Displays the full poster, title, overview, and a dynamic heart toggle to add/remove the movie from Favorites. |
 
-## 🚀 Setup & Installation
+## 🚀 Setup
 
 1. Clone the repository.
 2. Get a free API key from [TMDB](https://www.themoviedb.org/settings/api).
-3. Open the project in Android Studio.
-4. Add your API key securely. Open (or create) `local.properties` in the project root and add:
+3. Open the project in Android Studio. Ensure you are using a modern Gradle setup compatible with Kotlin `2.4.20`.
+4. Add your API key securely. Open your `local.properties` file (create one in the root directory if it doesn't exist) and add the following line:
    ```properties
    TMDB_API_KEY="your_actual_api_key_here"
    ```
-   Make sure `build.gradle.kts` reads this into `BuildConfig` so the key isn't hardcoded into source.
-5. Build and run on an emulator or physical device.
+   *(Note: Ensure your app's `build.gradle.kts` is configured to read from `local.properties` via `BuildConfig` so the key isn't hardcoded).*
+5. Build and run the app on an emulator or physical device.
 
-## 🧠 What I Learned
+## 📦 Key Dependencies
 
-- **Coroutines & StateFlow** — managing background network calls safely, and using `collectAsStateWithLifecycle()` to keep the UI lifecycle-aware
-- **Jetpack Navigation** — structuring routes with sealed classes to avoid hardcoded strings, and passing arguments (like a movie ID) between screens
-- **UI state modeling** — using a sealed `MovieUiState` (`Loading` / `Success` / `Error`) instead of exposing raw data, so the UI can react to every possible state explicitly
+```kotlin
+// UI & Navigation
+implementation("androidx.navigation:navigation-compose:2.8.0")
+implementation("io.coil-kt:coil-compose:2.6.0")
 
-## 🔮 Possible Next Steps
+// Dependency Injection
+implementation("com.google.dagger:hilt-android:2.51.1")
+ksp("com.google.dagger:hilt-compiler:2.51.1")
 
-- [ ] Build out the movie detail screen with full info (rating, release date, poster)
-- [ ] Split screens into stateless + stateful composables for better previewability and testing
+// Local Database
+implementation("androidx.room:room-runtime:2.6.1")
+implementation("androidx.room:room-ktx:2.6.1")
+ksp("androidx.room:room-compiler:2.6.1")
+```
+
+## 🗺️ Roadmap & Next Steps
+
+- [x] Fill in movie detail screen with full info
+- [x] Add favorites/watchlist (local storage via Room)
+- [x] Implement Bottom Navigation
 - [ ] Add search functionality
-- [ ] Add pagination / infinite scroll to the movie list
-- [ ] Implement pull-to-refresh
-- [ ] Add favorites/watchlist backed by Room Database
+- [ ] Add pagination / infinite scroll
+- [ ] Add pull-to-refresh
 
 ## 📄 License
 
-Personal project — feel free to use, study, or fork however you like!
+Personal project — no license, use however you like.

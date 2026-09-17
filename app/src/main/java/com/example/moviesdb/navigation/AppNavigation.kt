@@ -37,29 +37,20 @@ import com.example.moviesdb.data.model.Movie
 import com.example.moviesdb.viewmodel.FavoritesViewModel
 import com.example.moviesdb.viewmodel.MovieDetailsViewModel
 import com.example.moviesdb.viewmodel.MovieViewModel
+import com.example.moviesdb.viewmodel.SearchViewModel
 
 
 data class BottomNavItem(
-    val title: String,
-    val route: String,
-    val icon: ImageVector
+    val title: String, val route: String, val icon: ImageVector
 )
 
 val bottomNavItems = listOf(
     BottomNavItem(
-        title = "Home",
-        route = Screen.MovieList.route,
-        icon = Icons.Default.Home
-    ),
-    BottomNavItem(
-        title = "Search",
-        route = "",
-        icon = Icons.Default.Search
-    ),
-    BottomNavItem(
-        title = "Favorites",
-        route = Screen.Favorites.route,
-        icon = Icons.Default.Favorite
+        title = "Home", route = Screen.MovieList.route, icon = Icons.Default.Home
+    ), BottomNavItem(
+        title = "Search", route = Screen.Search.route, icon = Icons.Default.Search
+    ), BottomNavItem(
+        title = "Favorites", route = Screen.Favorites.route, icon = Icons.Default.Favorite
     )
 
 )
@@ -76,57 +67,46 @@ fun AppNavigation() {
     // 2. Decide if the bottom bar should be shown
     // hide the bottom bar on detail screens
     val showBottomBar =
-        currentRoute == Screen.MovieList.route || currentRoute == Screen.Favorites.route
+        currentRoute == Screen.MovieList.route || currentRoute == Screen.Favorites.route || currentRoute == Screen.Search.route
 
-    Scaffold(
-        bottomBar = {
-            if (showBottomBar) {
-                NavigationBar {
-                    bottomNavItems.forEach { item ->
-                        val isSelected = currentRoute == item.route
-                        NavigationBarItem(
-                            selected = isSelected,
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    // Pops the back stack so we don't build up a massive history of back-and-forth clicks
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    // Prevents multiple copies of the same screen
-                                    launchSingleTop = true
-                                    // Restores previous state (like scroll position) when re-selecting
-                                    restoreState = true
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.title
-                                )
-                            },
-                            label = { Text(text = item.title) }
+    Scaffold(bottomBar = {
+        if (showBottomBar) {
+            NavigationBar {
+                bottomNavItems.forEach { item ->
+                    val isSelected = currentRoute == item.route
+                    NavigationBarItem(selected = isSelected, onClick = {
+                        navController.navigate(item.route) {
+                            // Pops the back stack so we don't build up a massive history of back-and-forth clicks
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            // Prevents multiple copies of the same screen
+                            launchSingleTop = true
+                            // Restores previous state (like scroll position) when re-selecting
+                            restoreState = true
+                        }
+                    }, icon = {
+                        Icon(
+                            imageVector = item.icon, contentDescription = item.title
                         )
-                    }
+                    }, label = { Text(text = item.title) })
                 }
-            }
-        },
-        topBar = {
-            if (showBottomBar) {
-                val topBarTitle = when (currentRoute) {
-                    Screen.MovieList.route -> "Popular"
-                    Screen.Favorites.route -> "Favorites"
-                    else -> "Movies App"
-                }
-                TopAppBar(
-                    title = { Text(topBarTitle) },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor =  Purple40,
-                        titleContentColor = Color.Black
-                    )
-                )
             }
         }
-    ) { innerPadding ->
+    }, topBar = {
+        if (showBottomBar) {
+            val topBarTitle = when (currentRoute) {
+                Screen.MovieList.route -> "Popular"
+                Screen.Favorites.route -> "Favorites"
+                else -> "Movies App"
+            }
+            TopAppBar(
+                title = { Text(topBarTitle) }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Purple40, titleContentColor = Color.Black
+                )
+            )
+        }
+    }) { innerPadding ->
         // 3. Apply the innerPadding to NavHost so the bottom bar doesn't overlap lists
         NavHost(
             navController = navController,
@@ -137,11 +117,9 @@ fun AppNavigation() {
             composable(route = Screen.MovieList.route) {
                 val listViewModel: MovieViewModel = hiltViewModel()
                 MovieScreen(
-                    viewModel = listViewModel,
-                    onMovieClick = { movieId ->
+                    viewModel = listViewModel, onMovieClick = { movieId ->
                         navController.navigate(Screen.MovieDetails.createRoute(movieId))
-                    }
-                )
+                    })
             }
 
             // MOVIE DETAILS SCREEN
@@ -160,11 +138,18 @@ fun AppNavigation() {
             composable(route = Screen.Favorites.route) {
                 val favoritesViewModel: FavoritesViewModel = hiltViewModel()
                 FavoriteScreen(
-                    viewModel = favoritesViewModel,
-                    onMovieClick = { movieId ->
+                    viewModel = favoritesViewModel, onMovieClick = { movieId ->
                         navController.navigate(Screen.MovieDetails.createRoute(movieId))
-                    }
-                )
+                    })
+            }
+
+            //SEARCH SCREEN
+            composable(route = Screen.Search.route) {
+                val searchViewModel: SearchViewModel = hiltViewModel()
+                SearchScreen(
+                    viewModel = searchViewModel, onMovieClick = { movieId ->
+                        navController.navigate(Screen.MovieDetails.createRoute(movieId))
+                    })
             }
         }
     }

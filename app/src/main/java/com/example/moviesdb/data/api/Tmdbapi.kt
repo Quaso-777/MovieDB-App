@@ -28,4 +28,9 @@ interface Tmdbapi {
     suspend fun getPopularMovies(
         @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY, @Query("page") page: Int = 1
     ): MovieResponse
+
+    @GET("search/movie")
+    suspend fun searchMovies(
+        @Query("query") query: String
+    ): MovieResponse
 }

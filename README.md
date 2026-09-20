@@ -13,6 +13,8 @@ A native Android application built to explore and master Jetpack Compose, modern
 ## ✨ Features
 
 - **Discover Movies:** Browse a dynamically loaded 3-column grid of popular movies.
+- **Infinite Scrolling:** Seamlessly load pages of movies as the user scrolls to the bottom of the grid, powered by Jetpack Paging 3.
+- **Smart Search:** Search for specific movies using a debounced search bar that optimizes network calls by waiting for the user to pause typing.
 - **Detailed Views:** Tap any movie to view high-quality posters, titles, and full plot overviews.
 - **Local Favorites:** Save and manage favorite movies locally in a dedicated 2-column grid. The UI reacts instantly to database changes.
 - **Persistent Navigation:** Features a Material Design 3 Bottom Navigation Bar that saves scroll state and back-stack history across tabs.
@@ -26,7 +28,8 @@ This application strictly follows the **MVVM (Model-View-ViewModel)** architectu
 - **Architecture:** MVVM + Repository Pattern
 - **Dependency Injection:** Dagger Hilt
 - **Local Persistence:** Room Database (SQLite)
-- **Networking:** Retrofit2 & OkHttp
+- **Networking:** Retrofit2 & OkHttp (with Auth Interceptors)
+- **Pagination:** Jetpack Paging 3
 - **Asynchronous Programming:** Kotlin Coroutines & `Flow` / `StateFlow`
 - **Image Loading:** Coil
 - **Annotation Processing:** KSP (Kotlin Symbol Processing)
@@ -40,15 +43,16 @@ UI (Compose)  ───►  ViewModel  ───►  Repository  ───►  T
 ```
 
 - **`NetworkModule` & `DatabaseModule`** — Hilt modules providing singletons for Retrofit and Room.
-- **`MovieRepository`** — Single source of truth fetching data from the API and observing local favorites from Room.
-- **`ViewModels`** — Injected via `@HiltViewModel`, exposing UI states (`Loading`, `Success`, `Error`) via `StateFlow`.
+- **`MovieRepository`** — Single source of truth fetching data from the API, managing the `Pager`, and observing local favorites from Room.
+- **`ViewModels`** — Injected via `@HiltViewModel`, exposing UI states (`Loading`, `Success`, `Error`) and Paging streams via `Flow`.
 - **`MovieEntity` / `MovieResponse`** — Distinct data models separating local database tables from JSON network responses.
 
 ## 📱 Screens
 
 | Screen | Description |
 |---|---|
-| **Home Screen** | Shows popular movies in a scrollable 3-column grid with posters and titles. |
+| **Home Screen** | Shows popular movies in a scrollable 3-column grid using Paging 3 for infinite scrolling. |
+| **Search Screen** | Features a text field with Coroutine debouncing to search the TMDB database efficiently. |
 | **Favorites Screen** | A 2-column grid displaying locally saved movies. Updates instantly via Room `Flow`. |
 | **Movie Detail** | Displays the full poster, title, overview, and a dynamic heart toggle to add/remove the movie from Favorites. |
 
@@ -79,6 +83,10 @@ ksp("com.google.dagger:hilt-compiler:2.51.1")
 implementation("androidx.room:room-runtime:2.6.1")
 implementation("androidx.room:room-ktx:2.6.1")
 ksp("androidx.room:room-compiler:2.6.1")
+
+// Paging 3
+implementation("androidx.paging:paging-runtime-ktx:3.3.0")
+implementation("androidx.paging:paging-compose:3.3.0")
 ```
 
 ## 🗺️ Roadmap & Next Steps
@@ -88,7 +96,6 @@ ksp("androidx.room:room-compiler:2.6.1")
 - [x] Implement Bottom Navigation
 - [x] Add search functionality
 - [x] Add pagination / infinite scroll
-- [ ] Add pull-to-refresh
 
 ## 📄 License
 

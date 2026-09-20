@@ -1,5 +1,8 @@
 package com.example.moviesdb.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.example.moviesdb.data.model.MovieResponse
 import com.example.moviesdb.BuildConfig
 import com.example.moviesdb.data.api.MovieDetails
@@ -14,14 +17,17 @@ import javax.inject.Inject
 import kotlin.collections.emptyList
 
 
-class  MovieRepository @Inject constructor(
-    private val movieDao: MovieDao,
-    private val api: Tmdbapi
+class MovieRepository @Inject constructor(
+    private val movieDao: MovieDao, private val api: Tmdbapi
 ) {
 
     //RETROFIT/TMDB (REMOTE DATA)
-    suspend fun fetchPopularMovies(): MovieResponse {
-        return api.getPopularMovies(BuildConfig.TMDB_API_KEY)
+    fun fetchPopularMovies(): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20, //TMBD returns 20 items per page
+                enablePlaceholders = false
+            ), pagingSourceFactory = { MoviePagingSource(api) }).flow
     }
 
     suspend fun fetchMovieDetails(movieId: Int): MovieDetails {
@@ -41,10 +47,10 @@ class  MovieRepository @Inject constructor(
         }
     }
 
-    suspend fun searchMovies(query: String):List<Movie>{
-        return if (query.isNotBlank()){
+    suspend fun searchMovies(query: String): List<Movie> {
+        return if (query.isNotBlank()) {
             api.searchMovies(query).results
-        }else{
+        } else {
             emptyList<Movie>()
         }
     }

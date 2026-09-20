@@ -20,13 +20,13 @@ interface Tmdbapi {
 
     @GET("movie/{movie_id}")
     suspend fun getMovieDetails(
-        @Path("movie_id") movieId: Int, @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY
+        @Path("movie_id") movieId: Int
     ): MovieDetails
 
 
     @GET("movie/popular")
     suspend fun getPopularMovies(
-        @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY, @Query("page") page: Int = 1
+        @Query("page") page: Int = 1
     ): MovieResponse
 
     @GET("search/movie")

@@ -86,8 +86,8 @@ ksp("androidx.room:room-compiler:2.6.1")
 - [x] Fill in movie detail screen with full info
 - [x] Add favorites/watchlist (local storage via Room)
 - [x] Implement Bottom Navigation
-- [ ] Add search functionality
-- [ ] Add pagination / infinite scroll
+- [x] Add search functionality
+- [x] Add pagination / infinite scroll
 - [ ] Add pull-to-refresh
 
 ## 📄 License

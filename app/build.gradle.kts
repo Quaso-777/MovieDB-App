@@ -79,4 +79,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.4.0")
 
     implementation("androidx.compose.material:material-icons-core")
+
+    implementation("androidx.paging:paging-runtime-ktx:3.5.1")
+    implementation("androidx.paging:paging-compose:3.5.1")
 }
